@@ -1,5 +1,7 @@
-import pickle
-import gzip
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 import struct
 import numpy as np
 import sys
@@ -61,35 +63,39 @@ def parse_image():
 
     assert n_labels == n_images
 
-    training = [tuple([np.array([[i/255]
+    training = [tuple([np.array([[i/255.0]
                                  for _ in range(n_row)
                                  for i in struct.unpack(">%dB" % (n_col), f_image.read(n_col))]),
-                                 vectorized_result(struct.unpack(">B", f_label.read(1))[0])])
+                       vectorized_result(struct.unpack(">B", f_label.read(1))[0])])
                 for _ in range(n_images-10000)]
 
-    validation = [tuple([np.array([[i/255]
+    validation = [tuple([np.array([[i/255.0]
                                    for _ in range(n_row)
                                    for i in struct.unpack(">%dB" % (n_col), f_image.read(n_col))]),
-                                   vectorized_result(struct.unpack(">B", f_label.read(1))[0])])
+                         vectorized_result(struct.unpack(">B", f_label.read(1))[0])])
                   for _ in range(n_images-10000, n_images)]
 
     f_image.close()
-                                   f_label.close()
+    f_label.close()
 
     f_image = open('mnist/' + TEST_IMAGE, 'rb')
-                                   f_label = open('mnist/' + TEST_LABELS, 'rb')
+    f_label = open('mnist/' + TEST_LABELS, 'rb')
 
     i_magic, n_images, n_row, n_col = struct.unpack(">4I", f_image.read(16))
     l_magic, n_labels = struct.unpack(">2I", f_label.read(8))
 
-    testing = [tuple([np.array([[i/255]
-                                for _ in range(n_row)
-                                for i in struct.unpack(">%dB" % (n_col), f_image.read(n_col))]),
-                                vectorized_result(struct.unpack(">B", f_label.read(1))[0])])
+    testing = [tuple([np.array([i/255.0
+                                  for _ in range(n_row)
+                                  for i in struct.unpack(">%dB" % (n_col), f_image.read(n_col))]),
+                      vectorized_result(struct.unpack(">B", f_label.read(1))[0])])
                for _ in range(n_images)]
 
     with open('mnist_data', 'wb') as f:
-                                pickle.dump((training, validation, testing), f)
-                                f.close()
+        pickle.dump((training, validation, testing), f)
+        f.close()
 
     return training, validation, testing
+
+
+if __name__ == '__main__':
+    parse_image()
