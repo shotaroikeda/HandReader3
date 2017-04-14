@@ -30,7 +30,6 @@ class LeNet(nn.Module):
             self.fc1 = nn.Linear(16*4*4, 120).cuda()
             self.fc2 = nn.Linear(120, 84).cuda()
             self.fc3 = nn.Linear(84, 10).cuda()
-
         else:
             self.conv1 = nn.Conv2d(1, 6, 5)
             self.conv2 = nn.Conv2d(6, 16, 5)
@@ -62,11 +61,11 @@ optimizer = torch.optim.SGD(net.parameters(), lr=1e-3, momentum=0.9)
 for epoch in xrange(10000):
     batch = np.random.choice(train_x.shape[0], BATCH_SIZE)
     if CUDA: 
-        batch_x = Variable(torch.Tensor(train_x[batch]).view(BATCH_SIZE, 1, 28, 28))
-        batch_y = Variable(torch.Tensor(np.argmax(train_y[batch], axis=1)).view(BATCH_SIZE)).long()
-    else:
         batch_x = Variable(torch.Tensor(train_x[batch]).view(BATCH_SIZE, 1, 28, 28)).cuda()
         batch_y = Variable(torch.Tensor(np.argmax(train_y[batch], axis=1)).view(BATCH_SIZE)).long().cuda()
+    else:
+        batch_x = Variable(torch.Tensor(train_x[batch]).view(BATCH_SIZE, 1, 28, 28))
+        batch_y = Variable(torch.Tensor(np.argmax(train_y[batch], axis=1)).view(BATCH_SIZE)).long()
 
     optimizer.zero_grad()
     
