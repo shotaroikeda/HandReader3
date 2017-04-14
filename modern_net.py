@@ -24,18 +24,11 @@ test_y = Variable(torch.Tensor(np.argmax(test_y, axis=1)).view(test_y.shape[0]))
 class LeNet(nn.Module):
     def __init__(self):
         super(LeNet, self).__init__()
-        if CUDA:
-            self.conv1 = nn.Conv2d(1, 6, 5).cuda()
-            self.conv2 = nn.Conv2d(6, 16, 5).cuda()
-            self.fc1 = nn.Linear(16*4*4, 120).cuda()
-            self.fc2 = nn.Linear(120, 84).cuda()
-            self.fc3 = nn.Linear(84, 10).cuda()
-        else:
-            self.conv1 = nn.Conv2d(1, 6, 5)
-            self.conv2 = nn.Conv2d(6, 16, 5)
-            self.fc1 = nn.Linear(16*4*4, 120)
-            self.fc2 = nn.Linear(120, 84)
-            self.fc3 = nn.Linear(84, 10)
+        self.conv1 = nn.Conv2d(1, 6, 5)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16*4*4, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 10)
 
     def forward(self, x):
         x = F.max_pool2d(F.relu(self.conv1(x)), 2)
@@ -53,6 +46,9 @@ class LeNet(nn.Module):
 
 
 net = LeNet()
+
+if CUDA:
+    net.cuda()
 
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(net.parameters(), lr=1e-3, momentum=0.9)
