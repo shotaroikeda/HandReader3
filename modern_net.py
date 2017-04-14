@@ -17,8 +17,12 @@ train_x, train_y, test_x, test_y = mnist.load_data(one_hot=True)
 train_x = train_x.reshape([-1, 28, 28, 1])
 test_x = test_x.reshape([-1, 28, 28, 1])
 
-test_x = Variable(torch.Tensor(test_x).view(test_x.shape[0], 1, 28, 28))
-test_y = Variable(torch.Tensor(np.argmax(test_y, axis=1)).view(test_y.shape[0])).long()
+if CUDA:
+    test_x = Variable(torch.Tensor(test_x).cuda().view(test_x.shape[0], 1, 28, 28))
+    test_y = Variable(torch.Tensor(np.argmax(test_y, axis=1)).cuda().view(test_y.shape[0])).long()
+else:
+    test_x = Variable(torch.Tensor(test_x).view(test_x.shape[0], 1, 28, 28))
+    test_y = Variable(torch.Tensor(np.argmax(test_y, axis=1)).view(test_y.shape[0])).long()
 
 ## Network
 class LeNet(nn.Module):
@@ -48,7 +52,7 @@ class LeNet(nn.Module):
 net = LeNet()
 
 if CUDA:
-    net.cuda()
+    net = net.cuda()
 
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(net.parameters(), lr=1e-3, momentum=0.9)
