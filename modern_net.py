@@ -57,8 +57,8 @@ optimizer = torch.optim.SGD(net.parameters(), lr=1e-3, momentum=0.9)
 for epoch in xrange(10000):
     batch = np.random.choice(train_x.shape[0], BATCH_SIZE)
     if CUDA: 
-        batch_x = Variable(torch.Tensor(train_x[batch]).view(BATCH_SIZE, 1, 28, 28)).cuda()
-        batch_y = Variable(torch.Tensor(np.argmax(train_y[batch], axis=1)).view(BATCH_SIZE)).long().cuda()
+        batch_x = Variable(torch.Tensor(train_x[batch]).cuda().view(BATCH_SIZE, 1, 28, 28))
+        batch_y = Variable(torch.Tensor(np.argmax(train_y[batch], axis=1)).cuda().view(BATCH_SIZE)).long()
     else:
         batch_x = Variable(torch.Tensor(train_x[batch]).view(BATCH_SIZE, 1, 28, 28))
         batch_y = Variable(torch.Tensor(np.argmax(train_y[batch], axis=1)).view(BATCH_SIZE)).long()
